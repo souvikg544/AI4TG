@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import DrawingCanvas from './components/DrawingCanvas';
 import PredictionDisplay from './components/PredictionDisplay';
 import { makePrediction, makeMockPrediction, testApiConnection } from './services/predictionService';
@@ -9,20 +9,62 @@ function App() {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
   const [apiAvailable, setApiAvailable] = useState(null);
+  const [wordListData, setWordListData] = useState(null);
+  const [currentPageIndex, setCurrentPageIndex] = useState(0);
+  const [currentWordIndex, setCurrentWordIndex] = useState(0);
+  const [currentWordToDraw, setCurrentWordToDraw] = useState('');
 
-  // Test API connection on component mount
+  // Test API connection and load word list on component mount
   useEffect(() => {
-    const checkApiConnection = async () => {
+    const fetchData = async () => {
+      // Test API connection
       const isAvailable = await testApiConnection();
       setApiAvailable(isAvailable);
-      
       if (!isAvailable) {
         console.warn('API not available, will use mock predictions');
       }
+
+      // Load word list
+      try {
+        const response = await fetch('/wordList.json');
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        const data = await response.json();
+        setWordListData(data);
+        if (data && data.pages && data.pages.length > 0 && data.pages[0].words && data.pages[0].words.length > 0) {
+          setCurrentWordToDraw(data.pages[0].words[0]);
+        }
+      } catch (e) {
+        console.error("Could not load word list:", e);
+        setError("Could not load word list. Please try refreshing.");
+      }
     };
     
-    checkApiConnection();
+    fetchData();
   }, []);
+
+  const advanceWord = useCallback(() => {
+    if (!wordListData || !wordListData.pages) return;
+
+    const currentPage = wordListData.pages[currentPageIndex];
+    if (currentWordIndex < currentPage.words.length - 1) {
+      // Advance to the next word on the current page
+      const nextWordIndex = currentWordIndex + 1;
+      setCurrentWordIndex(nextWordIndex);
+      setCurrentWordToDraw(currentPage.words[nextWordIndex]);
+    } else if (currentPageIndex < wordListData.pages.length - 1) {
+      // Advance to the first word of the next page
+      const nextPageInx = currentPageIndex + 1;
+      setCurrentPageIndex(nextPageInx);
+      setCurrentWordIndex(0);
+      setCurrentWordToDraw(wordListData.pages[nextPageInx].words[0]);
+    } else {
+      // All words and pages completed
+      setCurrentWordToDraw("All words completed! Great job!");
+      // Optionally, reset or disable further predictions
+    }
+  }, [wordListData, currentPageIndex, currentWordIndex]);
 
   const handlePrediction = async (imageData) => {
     setIsLoading(true);
@@ -32,16 +74,24 @@ function App() {
       let predictionResults;
       
       if (apiAvailable === false) {
-        // Use mock predictions if API is not available
         predictionResults = await makeMockPrediction(imageData);
       } else {
-        // Try to use real API
         try {
           predictionResults = await makePrediction(imageData);
+          // Check if the current word was drawn correctly
+          // This is a simple check, can be made more sophisticated
+          const drawnCorrectly = predictionResults.some(p => p.label.toLowerCase() === currentWordToDraw.toLowerCase() && p.confidence > 0.5);
+          if (drawnCorrectly) {
+            // alert(`Correct! You drew ${currentWordToDraw}.`);
+            advanceWord(); // Advance to the next word if drawn correctly
+          } else {
+             // alert(`Try drawing ${currentWordToDraw} again, or click next if you want to skip.`);
+          }
+
         } catch (apiError) {
           console.warn('API call failed, falling back to mock predictions:', apiError);
           predictionResults = await makeMockPrediction(imageData);
-          setApiAvailable(false);
+          setApiAvailable(false); // Assume API is down if call fails
         }
       }
       
@@ -57,6 +107,13 @@ function App() {
   const handleRetry = () => {
     setError(null);
     setPredictions([]);
+    // Potentially also reset the current word or page if needed
+  };
+
+  const handleSkipWord = () => {
+    advanceWord();
+    setPredictions([]); // Clear previous predictions when skipping
+    setError(null);
   };
 
   return (
@@ -88,6 +145,11 @@ function App() {
         </header>
 
         <main className="app-main">
+          {currentWordToDraw && (
+            <div className="current-word-prompt">
+              <h2>Draw: <span className="word-to-draw">{currentWordToDraw}</span></h2>
+            </div>
+          )}
           <div className="canvas-section">
             <DrawingCanvas onPredict={handlePrediction} />
           </div>
@@ -98,7 +160,12 @@ function App() {
               isLoading={isLoading}
               error={error}
             />
-            
+             {currentWordToDraw && !currentWordToDraw.startsWith("All words completed") && (
+                <button className="skip-btn" onClick={handleSkipWord} disabled={isLoading}>
+                    <span className="skip-icon">➡️</span>
+                    Skip Word
+                </button>
+            )}
             {error && (
               <button className="retry-btn" onClick={handleRetry}>
                 <span className="retry-icon">🔄</span>

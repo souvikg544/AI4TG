@@ -322,3 +322,54 @@ body {
     color: #333;
   }
 }
+
+.current-word-prompt {
+  text-align: center;
+  margin-bottom: 20px;
+  padding: 10px;
+  background-color: #f0f8ff; /* AliceBlue */
+  border-radius: 8px;
+  border: 1px solid #e0e0e0;
+}
+
+.current-word-prompt h2 {
+  margin: 0;
+  font-size: 1.8em;
+  color: #333;
+}
+
+.word-to-draw {
+  font-weight: bold;
+  color: #007bff; /* Bright blue */
+  text-transform: capitalize;
+}
+
+.skip-btn {
+  background-color: #ffc107; /* Amber */
+  color: #212529; /* Dark grey */
+  border: none;
+  padding: 10px 20px;
+  font-size: 1em;
+  font-weight: bold;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.2s ease-in-out;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  margin-top: 10px;
+}
+
+.skip-btn:hover {
+  background-color: #e0a800; /* Darker amber */
+}
+
+.skip-btn:disabled {
+  background-color: #ccc;
+  cursor: not-allowed;
+}
+
+.skip-icon {
+  font-size: 1.2em;
+}

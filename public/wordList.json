@@ -1,0 +1,16 @@
+{
+  "pages": [
+    {
+      "pageNumber": 1,
+      "words": ["apple", "banana", "cat", "dog", "sun"]
+    },
+    {
+      "pageNumber": 2,
+      "words": ["house", "tree", "car", "book", "chair"]
+    },
+    {
+      "pageNumber": 3,
+      "words": ["bird", "fish", "star", "moon", "cloud"]
+    }
+  ]
+} 
