@@ -66,11 +66,11 @@ function App() {
           <div className="header-content">
             <h1 className="app-title">
               <span className="title-icon">🎨</span>
-              Drawing Classifier
+              Shiksha
               <span className="title-icon">🤖</span>
             </h1>
             <p className="app-subtitle">
-              Draw anything and let our AI guess what it is!
+              Learn without barriers
             </p>
             {apiAvailable === false && (
               <div className="api-status">
@@ -111,7 +111,7 @@ function App() {
         <footer className="app-footer">
           <p>
             <span className="footer-icon">✨</span>
-            Powered by AI • Draw, Predict, Discover
+            Powered by <a href="https://www.cognitii.com/" target="_blank" rel="noopener noreferrer">Cognitii</a> • Draw, Learn, Discover
             <span className="footer-icon">✨</span>
           </p>
         </footer>

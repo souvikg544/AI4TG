@@ -20,7 +20,7 @@ const PredictionDisplay = ({ predictions, isLoading, error }) => {
         <div className="prediction-loading">
           <div className="loading-spinner"></div>
           <h3>Analyzing your drawing...</h3>
-          <p>Please wait while our AI processes your artwork</p>
+          <p>Please wait while Coco processes your artwork</p>
         </div>
       </div>
     );
@@ -32,7 +32,7 @@ const PredictionDisplay = ({ predictions, isLoading, error }) => {
         <div className="prediction-empty">
           <span className="empty-icon">🎨</span>
           <h3>Ready to predict!</h3>
-          <p>Draw something on the canvas above and click "Predict" to see what our AI thinks it is!</p>
+          <p>Draw something on the canvas above and click "Predict" to see what Coco thinks it is!</p>
         </div>
       </div>
     );
