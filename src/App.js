@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import DrawingCanvas from './components/DrawingCanvas';
 import PredictionDisplay from './components/PredictionDisplay';
+import PdfViewer from './components/PdfViewer';
 import { makePrediction, makeMockPrediction, testApiConnection } from './services/predictionService';
 import './App.css';
 
@@ -13,6 +14,33 @@ function App() {
   const [currentPageIndex, setCurrentPageIndex] = useState(0);
   const [currentWordIndex, setCurrentWordIndex] = useState(0);
   const [currentWordToDraw, setCurrentWordToDraw] = useState('');
+  
+  const [canvasDimensions, setCanvasDimensions] = useState({ width: 450, height: 550 });
+  const pdfFileUrl = "/book.pdf";
+
+  useEffect(() => {
+    const calculateAndSetCanvasDimensions = () => {
+      const vw = window.innerWidth;
+      const vh = window.innerHeight;
+      const isMobile = vw <= 992;
+
+      let newHeight;
+      let newWidth;
+
+      if (isMobile) {
+        newHeight = Math.min(450, Math.max(300, vh * 0.45));
+        newWidth = Math.min(vw * 0.9, 450);
+      } else {
+        newHeight = Math.min(750, Math.max(550, vh * 0.70));
+        newWidth = 450;
+      }
+      setCanvasDimensions({ width: Math.round(newWidth), height: Math.round(newHeight) });
+    };
+
+    calculateAndSetCanvasDimensions();
+    window.addEventListener('resize', calculateAndSetCanvasDimensions);
+    return () => window.removeEventListener('resize', calculateAndSetCanvasDimensions);
+  }, []);
 
   // Test API connection and load word list on component mount
   useEffect(() => {
@@ -42,27 +70,23 @@ function App() {
     };
     
     fetchData();
-  }, []);
+  }, []); // Keep this useEffect for initial data fetching
 
   const advanceWord = useCallback(() => {
     if (!wordListData || !wordListData.pages) return;
 
-    const currentPage = wordListData.pages[currentPageIndex];
-    if (currentWordIndex < currentPage.words.length - 1) {
-      // Advance to the next word on the current page
+    const currentPageData = wordListData.pages[currentPageIndex];
+    if (currentWordIndex < currentPageData.words.length - 1) {
       const nextWordIndex = currentWordIndex + 1;
       setCurrentWordIndex(nextWordIndex);
-      setCurrentWordToDraw(currentPage.words[nextWordIndex]);
+      setCurrentWordToDraw(currentPageData.words[nextWordIndex]);
     } else if (currentPageIndex < wordListData.pages.length - 1) {
-      // Advance to the first word of the next page
-      const nextPageInx = currentPageIndex + 1;
-      setCurrentPageIndex(nextPageInx);
+      const nextPageIdx = currentPageIndex + 1;
+      setCurrentPageIndex(nextPageIdx);
       setCurrentWordIndex(0);
-      setCurrentWordToDraw(wordListData.pages[nextPageInx].words[0]);
+      setCurrentWordToDraw(wordListData.pages[nextPageIdx].words[0]);
     } else {
-      // All words and pages completed
       setCurrentWordToDraw("All words completed! Great job!");
-      // Optionally, reset or disable further predictions
     }
   }, [wordListData, currentPageIndex, currentWordIndex]);
 
@@ -78,20 +102,14 @@ function App() {
       } else {
         try {
           predictionResults = await makePrediction(imageData);
-          // Check if the current word was drawn correctly
-          // This is a simple check, can be made more sophisticated
           const drawnCorrectly = predictionResults.some(p => p.label.toLowerCase() === currentWordToDraw.toLowerCase() && p.confidence > 0.5);
-          if (drawnCorrectly) {
-            // alert(`Correct! You drew ${currentWordToDraw}.`);
-            advanceWord(); // Advance to the next word if drawn correctly
-          } else {
-             // alert(`Try drawing ${currentWordToDraw} again, or click next if you want to skip.`);
+          if (drawnCorrectly && !currentWordToDraw.startsWith("All words completed")) {
+            advanceWord();
           }
-
         } catch (apiError) {
           console.warn('API call failed, falling back to mock predictions:', apiError);
           predictionResults = await makeMockPrediction(imageData);
-          setApiAvailable(false); // Assume API is down if call fails
+          setApiAvailable(false);
         }
       }
       
@@ -107,13 +125,21 @@ function App() {
   const handleRetry = () => {
     setError(null);
     setPredictions([]);
-    // Potentially also reset the current word or page if needed
   };
 
   const handleSkipWord = () => {
-    advanceWord();
-    setPredictions([]); // Clear previous predictions when skipping
-    setError(null);
+    if (!currentWordToDraw.startsWith("All words completed")) {
+      advanceWord();
+      setPredictions([]); 
+      setError(null);
+    }
+  };
+
+  const getCurrentPageNumberForPdf = () => {
+    if (wordListData && wordListData.pages && wordListData.pages[currentPageIndex]) {
+      return wordListData.pages[currentPageIndex].pageNumber;
+    }
+    return 1;
   };
 
   return (
@@ -144,29 +170,60 @@ function App() {
           </div>
         </header>
 
-        <main className="app-main">
-          {currentWordToDraw && (
-            <div className="current-word-prompt">
-              <h2>Draw: <span className="word-to-draw">{currentWordToDraw}</span></h2>
+        <main className="main-content-wrapper">
+          <div className="app-main-grid-layout">
+            <div className="pdf-section">
+              {currentWordToDraw && !currentWordToDraw.startsWith("All words completed") && (
+                <div className="pdf-prompt-intro">
+                  <p className="pdf-prompt-text">
+                    Find the word <span className="word-emphasis">{currentWordToDraw}</span> in this Page.
+                  </p>
+                  <div className="arrow-down-animation"></div>
+                </div>
+              )}
+
+              {wordListData && (
+                <div className="pdf-viewer-component-root">
+                  <PdfViewer 
+                    pdfUrl={pdfFileUrl} 
+                    pageNumber={getCurrentPageNumberForPdf()} 
+                    height={canvasDimensions.height}
+                  />
+                </div>
+              )}
+              {!wordListData && !error && <p>Loading PDF and word list...</p>}
+              {error && <p style={{color: 'red'}}>{error}</p>}
             </div>
-          )}
-          <div className="canvas-section">
-            <DrawingCanvas onPredict={handlePrediction} />
+
+            <div className="drawing-section">
+              {currentWordToDraw && (
+                <div className="current-word-prompt">
+                  <h2>Draw: <span className="word-to-draw">{currentWordToDraw}</span></h2>
+                </div>
+              )}
+              {currentWordToDraw && !currentWordToDraw.startsWith("All words completed") && (
+                  <button className="skip-btn" onClick={handleSkipWord} disabled={isLoading || currentWordToDraw.startsWith("All words completed")}>
+                      <span className="skip-icon">➡️</span>
+                      Next Word
+                  </button>
+              )}
+              <div className="canvas-wrapper">
+                <DrawingCanvas 
+                  onPredict={handlePrediction} 
+                  width={canvasDimensions.width} 
+                  height={canvasDimensions.height}
+                />
+              </div>
+            </div>
           </div>
-          
-          <div className="predictions-section">
+
+          <div className="predictions-section-global">
             <PredictionDisplay 
               predictions={predictions}
               isLoading={isLoading}
-              error={error}
+              error={error && !error.includes("word list") ? error : null}
             />
-             {currentWordToDraw && !currentWordToDraw.startsWith("All words completed") && (
-                <button className="skip-btn" onClick={handleSkipWord} disabled={isLoading}>
-                    <span className="skip-icon">➡️</span>
-                    Skip Word
-                </button>
-            )}
-            {error && (
+            {error && !error.includes("word list") && (
               <button className="retry-btn" onClick={handleRetry}>
                 <span className="retry-icon">🔄</span>
                 Try Again

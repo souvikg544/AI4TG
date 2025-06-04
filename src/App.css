@@ -126,27 +126,77 @@ body {
   font-size: 16px;
 }
 
-/* Main content */
-.app-main {
-  flex: 1;
+/* Wrapper for the grid and the global predictions section */
+.main-content-wrapper {
   display: flex;
   flex-direction: column;
-  align-items: center;
-  gap: 30px;
+  align-items: center; /* Center children like the grid and global predictions */
+  flex-grow: 1; /* Allow this wrapper to take available vertical space */
+  gap: 30px; /* Space between the grid and the global predictions */
 }
 
-.canvas-section {
+/* Main content layout - Grid for PDF and Drawing Canvas */
+.app-main-grid-layout {
+  flex: 1; 
+  display: grid;
+  grid-template-columns: 1fr 1fr; 
+  gap: 25px; 
   width: 100%;
+  max-width: 1200px; 
+  align-items: stretch; /* CRITICAL: Ensure columns stretch to the same height */
+}
+
+.pdf-section,
+.drawing-section {
   display: flex;
+  flex-direction: column;
+  align-items: center; /* Center prompts and other content horizontally */
+  width: 100%; 
+  height: 100%; /* CRITICAL: Ensure sections fill the stretched grid cell height */
+}
+
+/* This is the root of the PdfViewer component. Push IT to the bottom of .pdf-section */
+.pdf-section .pdf-viewer-component-root {
+  width: 100%; 
+  flex-grow: 1;
+  display: flex;
+  align-items: center;
   justify-content: center;
+  /* It's already a flex column internally */
 }
 
-.predictions-section {
+/* This is the wrapper for DrawingCanvas. Push IT to the bottom of .drawing-section */
+.drawing-section .canvas-wrapper {
+  width: 100%; 
+  display: flex; 
+  justify-content: center;
+  align-items: center; 
+  flex-grow: 1;
+}
+
+/* Prompts should align to center by default due to align-items: center on .pdf-section/.drawing-section */
+.pdf-section {
+  align-items: center; /* Keep for prompts etc. */
+}
+.drawing-section {
+  align-items: center; /* Keep for prompts etc. */
+}
+
+/* Ensure the canvas itself tries to match the PDF viewer height */
+/* We might need to pass props to DrawingCanvas or style its internal canvas element */
+/* For now, let's assume DrawingCanvas is styled or accepts props for 500px width/height */
+
+.drawing-section .current-word-prompt {
   width: 100%;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 20px;
+  max-width: 500px; /* Match typical canvas width */
+  box-sizing: border-box;
+  margin-bottom: 10px; /* Reduced margin as skip button will be below */
+}
+
+.drawing-section .predictions-controls-wrapper {
+  width: 100%;
+  max-width: 500px; /* Match typical canvas width */
+  box-sizing: border-box;
 }
 
 /* Retry button */
@@ -220,6 +270,63 @@ body {
   50% {
     opacity: 0.5;
     transform: scale(0.8);
+  }
+}
+
+/* Global Predictions Section - Centered below the grid */
+.predictions-section-global {
+  width: 100%;
+  max-width: 600px; /* Or adjust as needed for centering */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 15px;
+  padding: 20px;
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(10px);
+  border-radius: 15px;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+  margin-bottom: 20px; /* Space at the bottom */
+}
+
+/* Remove or ensure these old/moved styles don't conflict */
+.predictions-below-canvas-wrapper {
+  /* This class was in App.js previously, styles might be irrelevant or merged */
+  /* display: none; /* If no longer used */
+}
+
+.drawing-section .predictions-controls-wrapper {
+  /* This was an old wrapper within drawing-section, ensure it's not conflicting */
+  /* display: none; /* If no longer used */
+}
+
+/* Responsive adjustments for the grid layout */
+@media (max-width: 992px) { 
+  .app-main-grid-layout {
+    grid-template-columns: 1fr; /* Stack columns */
+    align-items: flex-start; /* On mobile, stacking means stretch isn't as relevant; top-align is fine */
+  }
+  .pdf-section,
+  .drawing-section {
+    height: auto; /* On mobile, let content determine height */
+  }
+  .pdf-section .pdf-viewer-component-root,
+  .drawing-section .canvas-wrapper {
+    margin-top: 0; /* Reset margin-top for natural flow on mobile */
+  }
+  .pdf-section {
+    order: 0; 
+  }
+  .drawing-section {
+    order: 1; 
+  }
+  .main-content-wrapper {
+    gap: 20px; /* Adjust gap for mobile */
+  }
+  .predictions-section-global {
+    max-width: 95%; /* Take more width on mobile */
+    padding: 15px;
   }
 }
 
@@ -358,7 +465,8 @@ body {
   align-items: center;
   justify-content: center;
   gap: 8px;
-  margin-top: 10px;
+  margin-bottom: 15px; /* Space below skip button, before canvas */
+  max-width: 200px; /* Give it a max-width to not be overly wide */
 }
 
 .skip-btn:hover {
@@ -372,4 +480,68 @@ body {
 
 .skip-icon {
   font-size: 1.2em;
+}
+
+/* Ensure canvas section (now canvas-wrapper) and predictions section (now predictions-controls-wrapper) don't have conflicting old styles */
+.canvas-section, .predictions-section {
+  /* These old classes might still be targeted by generic styles, 
+     ensure they don't interfere or remove them if no longer used directly in App.js for layout */
+}
+
+/* Prompt for PDF section */
+.pdf-prompt-intro {
+  width: 90%;
+  max-width: 450px; /* Align with canvas width or be slightly less */
+  padding: 12px 15px;
+  margin-bottom: 15px; /* Space before PDF viewer */
+  background-color: #e3f2fd; /* Light blue background */
+  border: 1px solid #bbdefb; /* Slightly darker blue border */
+  border-radius: 8px;
+  text-align: center;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+}
+
+.pdf-prompt-text {
+  margin: 0 0 10px 0; /* Space below text, before arrow */
+  font-size: 1.1em; 
+  color: #1e88e5; /* Blue text color */
+  line-height: 1.4;
+}
+
+.pdf-prompt-text .word-emphasis { 
+  font-weight: bold;
+  color: #0d47a1; /* Darker blue for the word itself */
+  text-transform: capitalize;
+}
+
+/* Arrow Down Animation */
+.arrow-down-animation {
+  width: 0;
+  height: 0;
+  border-left: 12px solid transparent;  
+  border-right: 12px solid transparent; 
+  border-top: 18px solid #1565c0;    /* Arrow color and height */
+  margin: 0 auto; /* Center the arrow */
+  animation: bobbingArrow 1.8s infinite ease-in-out;
+}
+
+@keyframes bobbingArrow {
+  0%, 100% {
+    transform: translateY(0);
+    opacity: 0.7;
+  }
+  50% {
+    transform: translateY(6px); /* Bobbing distance */
+    opacity: 1;
+  }
+}
+
+/* Ensure .pdf-section handles alignment of this new child properly */
+.pdf-section {
+  display: flex;
+  flex-direction: column;
+  align-items: center; /* This will center .pdf-prompt-intro and .pdf-viewer-container */
+  justify-content: flex-start; /* Aligns children to the top of the flex container */
+  height: 100%; 
+  /* padding-top: 10px; /* Optional: if more space is needed above the prompt */
 }

@@ -1,0 +1,82 @@
+/* New root container for the PdfViewer component */
+.pdf-viewer-component-root {
+  display: flex;
+  flex-direction: column;
+  align-items: center; /* Center the document area and page info horizontally */
+  width: 100%;
+  gap: 5px; /* Small gap between document area and page info */
+}
+
+/* This is the explicitly sized box for PDF rendering */
+.pdf-document-render-area {
+  width: 100%; 
+  /* height is set by inline style via props in PdfViewer.js */
+  overflow-y: auto;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  background-color: #f9f9f9;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  display: flex; /* To manage Document component filling this area */
+  flex-direction: column; /* Stack Document if it had other direct children */
+}
+
+/* Make the Document component fill the render area */
+.pdf-document-render-area .react-pdf__Document {
+  flex-grow: 1; 
+  display: flex;
+  flex-direction: column; 
+  align-items: center; 
+  width: 100%; /* Ensure Document uses full width of render area */
+  height: 100%; /* Ensure Document uses full height of render area */
+}
+
+/* Make the Page component fill the Document area */
+.pdf-document-render-area .react-pdf__Page {
+  flex-grow: 1; 
+  display: flex;
+  justify-content: center;
+  align-items: center; 
+  width: 100%; 
+  height: 100%; 
+}
+
+.pdf-document-render-area .react-pdf__Page__canvas {
+  max-width: 100%; 
+  max-height: 100%; 
+  object-fit: contain; 
+  border-radius: 4px;
+}
+
+.pdf-document-render-area .react-pdf__Page__textContent {
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+}
+
+.pdf-loading,
+.pdf-error-message {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%; /* Fill their container */
+  height: 100%; /* Fill their container (e.g. pdf-document-render-area) */
+  padding: 20px;
+  font-size: 1.2em;
+  color: #555;
+}
+
+.pdf-error-message {
+  color: red;
+  font-weight: bold;
+}
+
+.pdf-page-info {
+  text-align: center;
+  padding: 8px 0px; /* Reduced vertical padding slightly, no horizontal needed if centered by parent */
+  font-size: 0.9em;
+  color: #333;
+  /* background-color: #e9e9e9; /* Optional: can remove if too much */
+  /* border-top: 1px solid #ccc; /* Optional */
+  width: 100%; /* Take full width to be centered nicely */
+  flex-shrink: 0; 
+} 
