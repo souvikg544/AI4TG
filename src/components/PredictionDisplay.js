@@ -52,13 +52,13 @@ const PredictionDisplay = ({ predictions, isLoading, error }) => {
               <div className="prediction-info">
                 <span className="prediction-label">{prediction.label}</span>
                 <span className="prediction-confidence">
-                  {(prediction.confidence * 100).toFixed(1)}%
+                  {prediction.confidence.toFixed(1)}%
                 </span>
               </div>
               <div className="confidence-bar">
                 <div 
                   className="confidence-fill"
-                  style={{ width: `${prediction.confidence * 100}%` }}
+                  style={{ width: `${prediction.confidence}%` }}
                 ></div>
               </div>
             </div>
@@ -76,7 +76,7 @@ const PredictionDisplay = ({ predictions, isLoading, error }) => {
           <p>
             <strong>Best guess:</strong> {predictions[0].label} 
             <span className="confidence-text">
-              ({(predictions[0].confidence * 100).toFixed(1)}% confident)
+              ({predictions[0].confidence.toFixed(1)}% confident)
             </span>
           </p>
         </div>

@@ -101,7 +101,7 @@ function App() {
         predictionResults = await makeMockPrediction(imageData);
       } else {
         try {
-          predictionResults = await makePrediction(imageData);
+          predictionResults = await makePrediction(imageData, currentWordToDraw.toLowerCase());
           const drawnCorrectly = predictionResults.some(p => p.label.toLowerCase() === currentWordToDraw.toLowerCase() && p.confidence > 0.5);
           if (drawnCorrectly && !currentWordToDraw.startsWith("All words completed")) {
             advanceWord();

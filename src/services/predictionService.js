@@ -22,11 +22,13 @@ const processImageData = (imageData) => {
 /**
  * Make a prediction request to the Gradio API using the correct event-based format
  * @param {string} imageData - Base64 image data from canvas
+ * @param {string} word - The current word to draw (in lowercase)
  * @returns {Promise<Array>} - Array of prediction objects with label and confidence
  */
-export const makePrediction = async (imageData) => {
+export const makePrediction = async (imageData, word = '') => {
   try {
     console.log('Making prediction request to Gradio API...');
+    console.log('Current word:', word);
     
     const processedImageData = processImageData(imageData);
     
@@ -43,7 +45,7 @@ export const makePrediction = async (imageData) => {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        data: [processedImageData, API_CONFIG.topK]
+        data: [processedImageData, API_CONFIG.topK, word]
       }),
       signal: AbortSignal.timeout(API_CONFIG.timeout)
     });
