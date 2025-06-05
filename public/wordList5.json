@@ -1,0 +1,32 @@
+{
+  "pages": [
+    {
+      "pageNumber": 23,
+      "words": ["photosynthesis", "metamorphosis", "evaporation", "condensation", "precipitation"]
+    },
+    {
+      "pageNumber": 16,
+      "words": ["democracy", "constitution", "parliament", "amendment", "citizenship"]
+    },
+    {
+      "pageNumber": 31,
+      "words": ["algorithm", "hypothesis", "experiment", "analysis", "conclusion"]
+    },
+    {
+      "pageNumber": 9,
+      "words": ["entrepreneur", "economist", "philosopher", "archaeologist", "anthropologist"]
+    },
+    {
+      "pageNumber": 42,
+      "words": ["perseverance", "empathy", "integrity", "resilience", "compassion"]
+    },
+    {
+      "pageNumber": 28,
+      "words": ["chromosome", "mitochondria", "ecosystem", "biodiversity", "sustainability"]
+    },
+    {
+      "pageNumber": 11,
+      "words": ["parallelogram", "circumference", "diameter", "perimeter", "probability"]
+    }
+  ]
+} 

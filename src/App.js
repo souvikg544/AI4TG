@@ -3,6 +3,7 @@ import DrawingCanvas from './components/DrawingCanvas';
 import PredictionDisplay from './components/PredictionDisplay';
 import PdfViewer from './components/PdfViewer';
 import ResultModal from './components/ResultModal';
+import InitialScreen from './components/InitialScreen';
 import { makePrediction, makeMockPrediction, testApiConnection } from './services/predictionService';
 import './App.css';
 
@@ -17,9 +18,14 @@ function App() {
   const [currentWordToDraw, setCurrentWordToDraw] = useState('');
   const [showResultModal, setShowResultModal] = useState(false);
   const [isCorrectAnswer, setIsCorrectAnswer] = useState(false);
+  const [userSelection, setUserSelection] = useState(null);
+  const [isDataLoading, setIsDataLoading] = useState(false);
   
   const [canvasDimensions, setCanvasDimensions] = useState({ width: 450, height: 550 });
-  const pdfFileUrl = "/book.pdf";
+  
+  // Dynamic file URLs based on selected class
+  const pdfFileUrl = userSelection ? `/book${userSelection.class}.pdf` : "/book.pdf";
+  const wordListUrl = userSelection ? `/wordList${userSelection.class}.json` : "/wordList.json";
 
   useEffect(() => {
     const calculateAndSetCanvasDimensions = () => {
@@ -47,7 +53,13 @@ function App() {
 
   // Test API connection and load word list on component mount
   useEffect(() => {
+    // Only proceed if user has made their selection
+    if (!userSelection) return;
+
     const fetchData = async () => {
+      setIsDataLoading(true);
+      setError(null);
+      
       // Test API connection
       const isAvailable = await testApiConnection();
       setApiAvailable(isAvailable);
@@ -57,7 +69,7 @@ function App() {
 
       // Load word list
       try {
-        const response = await fetch('/wordList.json');
+        const response = await fetch(wordListUrl);
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`);
         }
@@ -68,12 +80,14 @@ function App() {
         }
       } catch (e) {
         console.error("Could not load word list:", e);
-        setError("Could not load word list. Please try refreshing.");
+        setError(`Could not load word list for Class ${userSelection.class}. Please try refreshing.`);
+      } finally {
+        setIsDataLoading(false);
       }
     };
     
     fetchData();
-  }, []); // Keep this useEffect for initial data fetching
+  }, [userSelection, wordListUrl]); // Run when user selection changes
 
   const advanceWord = useCallback(() => {
     if (!wordListData || !wordListData.pages) return;
@@ -189,104 +203,136 @@ function App() {
     return 1;
   };
 
+  const handleClassSelect = (selection) => {
+    console.log('User selected:', selection);
+    setUserSelection(selection);
+    // Reset all state when switching classes
+    setPredictions([]);
+    setCurrentPageIndex(0);
+    setCurrentWordIndex(0);
+    setCurrentWordToDraw('');
+    setError(null);
+    setShowResultModal(false);
+  };
+
   return (
     <div className="App">
-      <div className="app-container">
-        <header className="app-header">
-          <div className="header-content">
-            <h1 className="app-title">
-              <span className="title-icon">🎨</span>
-              Shiksha
-              <span className="title-icon">🤖</span>
-            </h1>
-            <p className="app-subtitle">
-              Learn without barriers
-            </p>
-            {apiAvailable === false && (
-              <div className="api-status">
-                <span className="status-icon">⚠️</span>
-                <span>Demo mode - Gradio API not connected</span>
-              </div>
-            )}
-            {apiAvailable === true && (
-              <div className="api-status" style={{ background: 'rgba(40, 167, 69, 0.2)', color: '#d4edda', borderColor: 'rgba(40, 167, 69, 0.3)' }}>
-                <span className="status-icon">✅</span>
-                <span>Connected to Gradio API</span>
-              </div>
-            )}
+      {!userSelection ? (
+        <InitialScreen onClassSelect={handleClassSelect} />
+      ) : isDataLoading ? (
+        <div className="loading-screen">
+          <div className="loading-content">
+            <div className="loading-spinner-large"></div>
+            <h2>Loading Class {userSelection.class} Content...</h2>
+            <p>Please wait while we prepare your learning materials</p>
           </div>
-        </header>
-
-        <main className="main-content-wrapper">
-          <div className="app-main-grid-layout">
-            <div className="pdf-section">
-              {currentWordToDraw && !currentWordToDraw.startsWith("All words completed") && (
-                <div className="pdf-prompt-intro">
-                  <p className="pdf-prompt-text">
-                    Find the word <span className="word-emphasis">{currentWordToDraw}</span> in this Page.
-                  </p>
-                  <div className="arrow-down-animation"></div>
+        </div>
+      ) : (
+        <div className="app-container">
+          <header className="app-header">
+            <div className="header-content">
+              <h1 className="app-title">
+                <span className="title-icon">🎨</span>
+                Shiksha
+                <span className="title-icon">🤖</span>
+              </h1>
+              <p className="app-subtitle">
+                Learn without barriers - Class {userSelection.class} ({userSelection.age} years)
+              </p>
+              {apiAvailable === false && (
+                <div className="api-status">
+                  <span className="status-icon">⚠️</span>
+                  <span>Demo mode - Gradio API not connected</span>
                 </div>
               )}
+              {apiAvailable === true && (
+                <div className="api-status" style={{ background: 'rgba(40, 167, 69, 0.2)', color: '#d4edda', borderColor: 'rgba(40, 167, 69, 0.3)' }}>
+                  <span className="status-icon">✅</span>
+                  <span>Connected to Gradio API</span>
+                </div>
+              )}
+              <button 
+                className="change-class-btn"
+                onClick={() => setUserSelection(null)}
+                title="Change class level"
+              >
+                <span className="btn-icon">🔄</span>
+                Change Class
+              </button>
+            </div>
+          </header>
 
-              {wordListData && (
-                <div className="pdf-viewer-component-root">
-                  <PdfViewer 
-                    pdfUrl={pdfFileUrl} 
-                    pageNumber={getCurrentPageNumberForPdf()} 
+          <main className="main-content-wrapper">
+            <div className="app-main-grid-layout">
+              <div className="pdf-section">
+                {currentWordToDraw && !currentWordToDraw.startsWith("All words completed") && (
+                  <div className="pdf-prompt-intro">
+                    <p className="pdf-prompt-text">
+                      Find the word <span className="word-emphasis">{currentWordToDraw}</span> in this Page.
+                    </p>
+                    <div className="arrow-down-animation"></div>
+                  </div>
+                )}
+
+                {wordListData && (
+                  <div className="pdf-viewer-component-root">
+                    <PdfViewer 
+                      pdfUrl={pdfFileUrl} 
+                      pageNumber={getCurrentPageNumberForPdf()} 
+                      height={canvasDimensions.height}
+                    />
+                  </div>
+                )}
+                {!wordListData && !error && <p>Loading PDF and word list...</p>}
+                {error && <p style={{color: 'red'}}>{error}</p>}
+              </div>
+
+              <div className="drawing-section">
+                {currentWordToDraw && (
+                  <div className="current-word-prompt">
+                    <h2>Draw: <span className="word-to-draw">{currentWordToDraw}</span></h2>
+                  </div>
+                )}
+                {currentWordToDraw && !currentWordToDraw.startsWith("All words completed") && (
+                    <button className="skip-btn" onClick={handleSkipWord} disabled={isLoading || currentWordToDraw.startsWith("All words completed")}>
+                        <span className="skip-icon">➡️</span>
+                        Next Word
+                    </button>
+                )}
+                <div className="canvas-wrapper">
+                  <DrawingCanvas 
+                    onPredict={handlePrediction} 
+                    width={canvasDimensions.width} 
                     height={canvasDimensions.height}
                   />
                 </div>
-              )}
-              {!wordListData && !error && <p>Loading PDF and word list...</p>}
-              {error && <p style={{color: 'red'}}>{error}</p>}
-            </div>
-
-            <div className="drawing-section">
-              {currentWordToDraw && (
-                <div className="current-word-prompt">
-                  <h2>Draw: <span className="word-to-draw">{currentWordToDraw}</span></h2>
-                </div>
-              )}
-              {currentWordToDraw && !currentWordToDraw.startsWith("All words completed") && (
-                  <button className="skip-btn" onClick={handleSkipWord} disabled={isLoading || currentWordToDraw.startsWith("All words completed")}>
-                      <span className="skip-icon">➡️</span>
-                      Next Word
-                  </button>
-              )}
-              <div className="canvas-wrapper">
-                <DrawingCanvas 
-                  onPredict={handlePrediction} 
-                  width={canvasDimensions.width} 
-                  height={canvasDimensions.height}
-                />
               </div>
             </div>
-          </div>
 
-          <div className="predictions-section-global">
-            <PredictionDisplay 
-              predictions={predictions}
-              isLoading={isLoading}
-              error={error && !error.includes("word list") ? error : null}
-            />
-            {error && !error.includes("word list") && (
-              <button className="retry-btn" onClick={handleRetry}>
-                <span className="retry-icon">🔄</span>
-                Try Again
-              </button>
-            )}
-          </div>
-        </main>
+            <div className="predictions-section-global">
+              <PredictionDisplay 
+                predictions={predictions}
+                isLoading={isLoading}
+                error={error && !error.includes("word list") ? error : null}
+              />
+              {error && !error.includes("word list") && (
+                <button className="retry-btn" onClick={handleRetry}>
+                  <span className="retry-icon">🔄</span>
+                  Try Again
+                </button>
+              )}
+            </div>
+          </main>
 
-        <footer className="app-footer">
-          <p>
-            <span className="footer-icon">✨</span>
-            Powered by <a href="https://www.cognitii.com/" target="_blank" rel="noopener noreferrer">Cognitii</a> • Draw, Learn, Discover
-            <span className="footer-icon">✨</span>
-          </p>
-        </footer>
-      </div>
+          <footer className="app-footer">
+            <p>
+              <span className="footer-icon">✨</span>
+              Powered by <a href="https://www.cognitii.com/" target="_blank" rel="noopener noreferrer">Cognitii</a> • Draw, Learn, Discover
+              <span className="footer-icon">✨</span>
+            </p>
+          </footer>
+        </div>
+      )}
 
       {showResultModal && (
         <ResultModal

@@ -1,0 +1,28 @@
+{
+  "pages": [
+    {
+      "pageNumber": 19,
+      "words": ["democracy", "ecosystem", "photosynthesis", "gravity", "electricity"]
+    },
+    {
+      "pageNumber": 32,
+      "words": ["pyramid", "satellite", "laboratory", "observatory", "university"]
+    },
+    {
+      "pageNumber": 14,
+      "words": ["journalist", "architect", "engineer", "scientist", "astronaut"]
+    },
+    {
+      "pageNumber": 27,
+      "words": ["telescope", "encyclopedia", "dictionary", "atlas", "calendar"]
+    },
+    {
+      "pageNumber": 6,
+      "words": ["triangle", "rectangle", "hexagon", "cylinder", "sphere"]
+    },
+    {
+      "pageNumber": 35,
+      "words": ["cooperation", "independence", "responsibility", "creativity", "patience"]
+    }
+  ]
+} 
