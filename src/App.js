@@ -2,6 +2,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import DrawingCanvas from './components/DrawingCanvas';
 import PredictionDisplay from './components/PredictionDisplay';
 import PdfViewer from './components/PdfViewer';
+import ResultModal from './components/ResultModal';
 import { makePrediction, makeMockPrediction, testApiConnection } from './services/predictionService';
 import './App.css';
 
@@ -14,6 +15,8 @@ function App() {
   const [currentPageIndex, setCurrentPageIndex] = useState(0);
   const [currentWordIndex, setCurrentWordIndex] = useState(0);
   const [currentWordToDraw, setCurrentWordToDraw] = useState('');
+  const [showResultModal, setShowResultModal] = useState(false);
+  const [isCorrectAnswer, setIsCorrectAnswer] = useState(false);
   
   const [canvasDimensions, setCanvasDimensions] = useState({ width: 450, height: 550 });
   const pdfFileUrl = "/book.pdf";
@@ -102,10 +105,7 @@ function App() {
       } else {
         try {
           predictionResults = await makePrediction(imageData, currentWordToDraw.toLowerCase());
-          const drawnCorrectly = predictionResults.some(p => p.label.toLowerCase() === currentWordToDraw.toLowerCase() && p.confidence > 0.5);
-          if (drawnCorrectly && !currentWordToDraw.startsWith("All words completed")) {
-            advanceWord();
-          }
+          // Don't auto-advance here, let the modal handle it
         } catch (apiError) {
           console.warn('API call failed, falling back to mock predictions:', apiError);
           predictionResults = await makeMockPrediction(imageData);
@@ -114,6 +114,15 @@ function App() {
       }
       
       setPredictions(predictionResults);
+      
+      // Check if the answer is correct and show modal
+      const isCorrect = predictionResults.length > 0 && 
+        predictionResults[0].label.toLowerCase() === currentWordToDraw.toLowerCase() && 
+        predictionResults[0].confidence > 50; // Assuming confidence is 0-100 range
+      
+      setIsCorrectAnswer(isCorrect);
+      setShowResultModal(true);
+      
     } catch (err) {
       console.error('Prediction error:', err);
       setError(err.message || 'Failed to make prediction');
@@ -133,6 +142,44 @@ function App() {
       setPredictions([]); 
       setError(null);
     }
+  };
+
+  const handleModalNextWord = () => {
+    setShowResultModal(false);
+    if (!currentWordToDraw.startsWith("All words completed")) {
+      advanceWord();
+      setPredictions([]);
+      setError(null);
+    }
+  };
+
+  const handleModalPlayAgain = () => {
+    setShowResultModal(false);
+    setPredictions([]);
+    setError(null);
+  };
+
+  const handleModalClose = () => {
+    setShowResultModal(false);
+  };
+
+  // Helper function to check if we're on the last word of current page
+  const isLastWordOfPage = () => {
+    if (!wordListData || !wordListData.pages || !wordListData.pages[currentPageIndex]) {
+      return false;
+    }
+    const currentPageData = wordListData.pages[currentPageIndex];
+    return currentWordIndex === currentPageData.words.length - 1;
+  };
+
+  // Helper function to get next page number
+  const getNextPageNumber = () => {
+    if (!wordListData || !wordListData.pages) return null;
+    const nextPageIndex = currentPageIndex + 1;
+    if (nextPageIndex < wordListData.pages.length) {
+      return wordListData.pages[nextPageIndex].pageNumber;
+    }
+    return null;
   };
 
   const getCurrentPageNumberForPdf = () => {
@@ -240,6 +287,21 @@ function App() {
           </p>
         </footer>
       </div>
+
+      {showResultModal && (
+        <ResultModal
+          isOpen={showResultModal}
+          isCorrect={isCorrectAnswer}
+          targetWord={currentWordToDraw}
+          predictedWord={predictions.length > 0 ? predictions[0].label : ''}
+          confidence={predictions.length > 0 ? predictions[0].confidence : 0}
+          isLastWordOfPage={isLastWordOfPage()}
+          nextPageNumber={getNextPageNumber()}
+          onNextWord={handleModalNextWord}
+          onPlayAgain={handleModalPlayAgain}
+          onClose={handleModalClose}
+        />
+      )}
     </div>
   );
 }
