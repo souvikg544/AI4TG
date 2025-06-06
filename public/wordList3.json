@@ -1,24 +1,121 @@
 {
   "pages": [
     {
-      "pageNumber": 12,
-      "words": ["mountain", "volcano", "ocean", "forest", "desert"]
+      "pageNumber": 1,
+      "draw": [
+        "children",
+        "ball",
+        "tree",
+        "A group of children playing in a field"
+      ]
     },
     {
-      "pageNumber": 25,
-      "words": ["guitar", "piano", "drums", "violin", "trumpet"]
+      "pageNumber": 3,
+      "draw": [
+        "boy",
+        "dog",
+        "house",
+        "A boy helping a dog"
+      ]
+    },
+    {
+      "pageNumber": 5,
+      "draw": [
+        "market",
+        "fruits",
+        "vegetables",
+        "A market in the village"
+      ]
     },
     {
       "pageNumber": 7,
-      "words": ["telescope", "microscope", "calculator", "computer", "robot"]
+      "draw": [
+        "train",
+        "railway station",
+        "guard",
+        "A train at the station"
+      ]
     },
     {
-      "pageNumber": 41,
-      "words": ["castle", "bridge", "tower", "fountain", "statue"]
+      "pageNumber": 9,
+      "draw": [
+        "cow",
+        "beans",
+        "strange man",
+        "A boy exchanging a cow for beans"
+      ]
     },
     {
-      "pageNumber": 18,
-      "words": ["doctor", "teacher", "firefighter", "police", "chef"]
+      "pageNumber": 11,
+      "draw": [
+        "beanstalk",
+        "castle",
+        "giant",
+        "A giant beanstalk reaching the sky"
+      ]
+    },
+    {
+      "pageNumber": 13,
+      "draw": [
+        "hen",
+        "golden egg",
+        "flute",
+        "A hen laying a golden egg"
+      ]
+    },
+    {
+      "pageNumber": 15,
+      "draw": [
+        "books",
+        "toys",
+        "clothes",
+        "A messy room being cleaned"
+      ]
+    },
+    {
+      "pageNumber": 17,
+      "draw": [
+        "mouse",
+        "pencil",
+        "apple",
+        "A mouse talking to a pencil"
+      ]
+    },
+    {
+      "pageNumber": 19,
+      "draw": [
+        "hen",
+        "pig",
+        "cat",
+        "A little red hen with her friends"
+      ]
+    },
+    {
+      "pageNumber": 21,
+      "draw": [
+        "Mary",
+        "three bowls",
+        "bears",
+        "Mary tasting payasam in the bears' house"
+      ]
+    },
+    {
+      "pageNumber": 23,
+      "draw": [
+        "crow",
+        "duck",
+        "rabbit",
+        "A classroom with animals as students"
+      ]
+    },
+    {
+      "pageNumber": 25,
+      "draw": [
+        "children",
+        "teacher",
+        "tree",
+        "Children playing in a school ground"
+      ]
     }
   ]
-} 
+}
