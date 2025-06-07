@@ -131,8 +131,9 @@ function App() {
       
       // Check if the answer is correct and show modal
       const isCorrect = predictionResults.length > 0 && 
-        predictionResults[0].label.toLowerCase() === currentWordToDraw.toLowerCase() && 
-        predictionResults[0].confidence > 50; // Assuming confidence is 0-100 range
+        predictionResults[0].label.toLowerCase() === currentWordToDraw.toLowerCase() // Assuming confidence is 0-100 range
+      console.log(predictionResults);
+      console.log(currentWordToDraw);
       
       setIsCorrectAnswer(isCorrect);
       setShowResultModal(true);
