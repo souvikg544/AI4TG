@@ -338,10 +338,26 @@
   text-decoration: none;
   font-weight: 600;
   transition: color 0.2s ease;
+  display: flex;
+  align-items: center;
 }
 
 .initial-footer a:hover {
   color: #f0f0f0;
+}
+
+.cognitii-logo {
+  height: 18px;
+  width: auto;
+  margin-right: 6px;
+  vertical-align: middle;
+  opacity: 0.9;
+  transition: all 0.3s ease;
+}
+
+.initial-footer a:hover .cognitii-logo {
+  opacity: 1;
+  transform: scale(1.1);
 }
 
 .footer-icon {
@@ -423,6 +439,11 @@
   .initial-footer p {
     flex-direction: column;
     gap: 5px;
+  }
+
+  .cognitii-logo {
+    height: 16px;
+    margin-right: 5px;
   }
 }
 

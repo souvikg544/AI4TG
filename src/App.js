@@ -327,7 +327,10 @@ function App() {
           <footer className="app-footer">
             <p>
               <span className="footer-icon">✨</span>
-              Powered by <a href="https://www.cognitii.com/" target="_blank" rel="noopener noreferrer">Cognitii</a> • Draw, Learn, Discover
+              Powered by <a href="https://www.cognitii.com/" target="_blank" rel="noopener noreferrer">
+                <img src="/cognitii_logo.png" alt="Cognitii Logo" className="cognitii-logo" />
+                Cognitii
+              </a> • Draw, Learn, Discover
               <span className="footer-icon">✨</span>
             </p>
           </footer>

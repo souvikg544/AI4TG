@@ -1,124 +1,100 @@
 {
-  "pages": [
-    {
-      "pageNumber": 2,
-      "words": ["house", "tree", "people", "children"]
-    },
-    {
-      "pageNumber": 3,
-      "words": ["man talking", "woman", "garden"]
-    },
-    {
-      "pageNumber": 4,
-      "words": ["two boys playing", "ball", "friends"]
-    },
-    {
-      "pageNumber": 5,
-      "words": ["family in kitchen", "mother", "father", "child"]
-    },
-    {
-      "pageNumber": 6,
-      "words": ["school", "book", "drawing", "birds singing"]
-    },
-    {
-      "pageNumber": 7,
-      "words": ["pancake", "kitchen", "food"]
-    },
-    {
-      "pageNumber": 8,
-      "words": ["pancake rolling", "hen", "duck", "road"]
-    },
-    {
-      "pageNumber": 9,
-      "words": ["monkeys", "bananas", "tree"]
-    },
-    {
-      "pageNumber": 10,
-      "words": ["children around tree", "roots", "branches"]
-    },
-    {
-      "pageNumber": 11,
-      "words": ["girl writing", "squirrel", "farmer", "plough"]
-    },
-    {
-      "pageNumber": 12,
-      "words": ["woman carrying sticks", "umbrella", "children playing under tree"]
-    },
-    {
-      "pageNumber": 13,
-      "words": ["lion", "forest", "tall trees"]
-    },
-    {
-      "pageNumber": 14,
-      "words": ["deer", "elephant", "cutting trees", "animals running"]
-    },
-    {
-      "pageNumber": 15,
-      "words": ["market", "vegetables", "fruits"]
-    },
-    {
-      "pageNumber": 16,
-      "words": ["happy face", "sad face", "friends"]
-    },
-    {
-      "pageNumber": 17,
-      "words": ["desert", "camel", "man standing"]
-    },
-    {
-      "pageNumber": 18,
-      "words": ["boy on camel", "bags", "tent"]
-    },
-    {
-      "pageNumber": 19,
-      "words": ["sick man", "medicine", "mother crying"]
-    },
-    {
-      "pageNumber": 20,
-      "words": ["sand storm", "camel sinking", "quick sand"]
-    },
-    {
-      "pageNumber": 21,
-      "words": ["palm trees", "water", "boy sleeping"]
-    },
-    {
-      "pageNumber": 22,
-      "words": ["boat", "car", "plane", "train"]
-    },
-    {
-      "pageNumber": 23,
-      "words": ["police", "man with handcuffs", "arrest"]
-    },
-    {
-      "pageNumber": 24,
-      "words": ["boy in shop", "bells", "mother hugging child"]
-    },
-    {
-      "pageNumber": 25,
-      "words": ["fruit seller", "pineapple", "money"]
-    },
-    {
-      "pageNumber": 26,
-      "words": ["boy with catapult", "birds", "tree"]
-    },
-    {
-      "pageNumber": 27,
-      "words": ["bird nest", "baby birds", "garage"]
-    },
-    {
-      "pageNumber": 28,
-      "words": ["robin", "jay bird", "garden"]
-    },
-    {
-      "pageNumber": 29,
-      "words": ["angry man", "black cat"]
-    },
-    {
-      "pageNumber": 30,
-      "words": ["village", "houses", "people"]
-    },
-    {
-      "pageNumber": 31,
-      "words": ["ladder", "broken mirror", "rocking chair"]
-    }
-  ]
+"pages": [
+  {
+    "pageNumber": 26,
+    "words": ["bird nest", "tree with don't hurt birds sign"]
+  },
+  {
+    "pageNumber": 28,
+    "words": ["branch of a tree", "leaf in a branch"]
+  },
+  {
+    "pageNumber": 29,
+    "words": ["angry man", "black cat"]
+  },
+  {
+    "pageNumber": 30,
+    "words": ["night sky with stars and moon"]
+  },
+  {
+    "pageNumber": 2,
+    "words": ["house", "leaf","tree", "people", "happy", "children"]
+  },
+  {
+    "pageNumber": 3,
+    "words": ["wheel", "cobbler", "garden", "pot", "plough", "potter's wheel"]
+  },
+  {
+    "pageNumber": 4,
+    "words": ["cage", "bird"]
+  },
+  {
+    "pageNumber": 5,
+    "words": ["teacher checking the book", "students writing"]
+  },
+  {
+    "pageNumber": 6,
+    "words": ["boy doing mathematics"]
+  },
+  {
+    "pageNumber": 7,
+    "words": ["woman cooking food"]
+  },
+  {
+    "pageNumber": 9,
+    "words": ["banana"]
+  },
+  {
+    "pageNumber": 10,
+    "words": ["boy watering a plant"]
+  },
+  {
+    "pageNumber": 12,
+    "words": ["woman carrying firewood","man sitting below a tree"]
+  },
+  {
+    "pageNumber": 13,
+    "words": ["pond in a forest"]
+  },
+  {
+    "pageNumber": 14,
+    "words": ["deer", "elephant", "giraffe"]
+  },
+  {
+    "pageNumber": 15,
+    "words": ["market", "vegetables", "fruits"]
+  },
+  {
+    "pageNumber": 16,
+    "words": ["smiling face", "laughing face", "crying face", "friends"]
+  },
+  {
+    "pageNumber": 17,
+    "words": ["water bottle", "man drinking water"]
+  },
+  {
+    "pageNumber": 21,
+    "words": ["tent", "camel in a desert"]
+  },
+  {
+    "pageNumber": 22,
+    "words": ["boat", "car", "airplane", "train"]
+  },
+  {
+    "pageNumber": 23,
+    "words": ["bus", "police", "beaware signboard"]
+  },
+  {
+    "pageNumber": 24,
+    "words": ["school bag", "table", "boy sitting on the chair"]
+  },
+  {
+    "pageNumber": 25,
+    "words": ["pineapple", "shopkeeper", "money"]
+  },
+  {
+    "pageNumber": 31,
+    "words": ["ladder"]
+  }
+]
 }

@@ -298,4 +298,11 @@
     height: 30px;
     font-size: 14px;
   }
-} 
+}
+
+.coco-mascot {
+  width: 60px;
+  height: 60px;
+  max-width: 60px;
+  max-height: 60px;
+}

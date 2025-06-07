@@ -123,7 +123,10 @@ const InitialScreen = ({ onClassSelect }) => {
         <footer className="initial-footer">
           <p>
             <span className="footer-icon">✨</span>
-            Powered by <a href="https://www.cognitii.com/" target="_blank" rel="noopener noreferrer">Cognitii</a>
+            Powered by <a href="https://www.cognitii.com/" target="_blank" rel="noopener noreferrer">
+              <img src="/cognitii_logo.png" alt="Cognitii Logo" className="cognitii-logo" />
+              Cognitii
+            </a>
             <span className="footer-icon">✨</span>
           </p>
         </footer>

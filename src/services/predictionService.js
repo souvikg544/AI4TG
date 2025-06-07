@@ -1,7 +1,8 @@
 // Configuration for the Gradio API
 const API_CONFIG = {
   // Gradio Space URL - can be overridden with environment variable
-  spaceUrl: process.env.REACT_APP_GRADIO_SPACE || "souvikg544-quickdraw-classifier.hf.space",
+  // spaceUrl: process.env.REACT_APP_GRADIO_SPACE || "souvikg544-quickdraw-classifier.hf.space",
+  spaceUrl: process.env.REACT_APP_GRADIO_SPACE || "souvikg544-draw-zero-shot.hf.space",
   timeout: parseInt(process.env.REACT_APP_API_TIMEOUT) || 300000, // 30 seconds timeout
   topK: parseInt(process.env.REACT_APP_TOP_K) || 5 // Number of top predictions to return
 };

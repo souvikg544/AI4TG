@@ -30,9 +30,17 @@ const PredictionDisplay = ({ predictions, isLoading, error }) => {
     return (
       <div className="prediction-display">
         <div className="prediction-empty">
-          <span className="empty-icon">🎨</span>
-          <h3>Ready to predict!</h3>
-          <p>Draw something on the canvas above and click "Predict" to see what Coco thinks it is!</p>
+          <div className="mascot-container">
+            <img 
+              src="/coco-mascot.svg" 
+              alt="Coco the Learning Buddy" 
+              className="coco-mascot"
+            />
+          </div>
+          <div className="welcome-content">
+            <h3>Ready to predict!</h3>
+            <p>Hi, I am Coco, I am your learning buddy. Draw the word and click on Predict to see what I think it is!</p>
+          </div>
         </div>
       </div>
     );

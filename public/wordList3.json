@@ -1,62 +1,72 @@
 {
   "pages": [
     {
-      "pageNumber": 1,
-      "draw": [
+      "pageNumber": 2,
+      "words": [
         "children",
         "ball",
         "tree",
-        "A group of children playing in a field"
+        "playing football"
       ]
     },
     {
       "pageNumber": 3,
-      "draw": [
-        "boy",
-        "dog",
-        "house",
-        "A boy helping a dog"
+      "words": [
+        "bottle of milk",
+        "roof of a house",
+        "crying baby"
+      ]
+    },
+    {
+      "pageNumber": 4,
+      "words": [
+        "footpaths",
+        "street lamps",
+        "car"
       ]
     },
     {
       "pageNumber": 5,
-      "draw": [
-        "market",
-        "fruits",
-        "vegetables",
-        "A market in the village"
+      "words": [
+        "sun",
+        "forest with trees",
+        "monkey hanging from tree",
+        "cooking"
       ]
     },
     {
       "pageNumber": 7,
-      "draw": [
+      "words": [
         "train",
-        "railway station",
-        "guard",
-        "A train at the station"
+        "railway station"
       ]
     },
     {
-      "pageNumber": 9,
-      "draw": [
-        "cow",
-        "beans",
-        "strange man",
-        "A boy exchanging a cow for beans"
+      "pageNumber": 7,
+      "words": [
+        "river flowing through a valley",
+        "bridge over the river"
       ]
     },
     {
-      "pageNumber": 11,
-      "draw": [
-        "beanstalk",
+      "pageNumber": 12,
+      "words": [
         "castle",
-        "giant",
-        "A giant beanstalk reaching the sky"
+        "A hen laying an egg",
+        "A giant devil"
+      ]
+    },
+
+    {
+      "pageNumber": 13,
+      "words": [
+        "A flute",
+        "A boy with his flute"
       ]
     },
     {
       "pageNumber": 13,
-      "draw": [
+      "words": [
         "hen",
         "golden egg",
         "flute",
@@ -64,57 +74,66 @@
       ]
     },
     {
-      "pageNumber": 15,
-      "draw": [
-        "books",
-        "toys",
+      "pageNumber": 14,
+      "words": [
+        "books on the table",
+        "bat and ball"
+      ]
+    },
+    {
+      "pageNumber": 16,
+      "words": [
+        "socks",
         "clothes",
-        "A messy room being cleaned"
       ]
     },
     {
-      "pageNumber": 17,
-      "draw": [
-        "mouse",
-        "pencil",
-        "apple",
-        "A mouse talking to a pencil"
+      "pageNumber": 18,
+      "words": [
+        "ceiling fan",
+        "clock",
+        "wall painting"
       ]
     },
+
     {
-      "pageNumber": 19,
-      "draw": [
-        "hen",
-        "pig",
-        "cat",
-        "A little red hen with her friends"
+      "pageNumber": 20,
+      "words": [
+        "Liom",
+        "Mouse"
       ]
     },
     {
       "pageNumber": 21,
-      "draw": [
-        "Mary",
-        "three bowls",
-        "bears",
-        "Mary tasting payasam in the bears' house"
+      "words": [
+        "Lady carrying somethingon her head",
+        "potter's wheel"
       ]
     },
     {
-      "pageNumber": 23,
-      "draw": [
-        "crow",
-        "duck",
-        "rabbit",
-        "A classroom with animals as students"
+      "pageNumber": 21,
+      "words": [
+        "pond"
+      ]
+    },
+    {
+      "pageNumber": 21,
+      "words": [
+        "wheat",
+        "potter's wheel"
       ]
     },
     {
       "pageNumber": 25,
-      "draw": [
-        "children",
-        "teacher",
-        "tree",
-        "Children playing in a school ground"
+      "words": [
+        "man with a turban"
+      ]
+    },
+    {
+      "pageNumber": 27,
+      "words": [
+        "a girl running",
+        "butterfly flying"
       ]
     }
   ]

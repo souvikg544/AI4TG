@@ -1,80 +1,112 @@
 {
   "pages": [
-    {
-      "pageNumber": 1,
-      "words": ["a village market", "vegetables", "rice", "eggs", "school uniform"]
-    },
-    {
-      "pageNumber": 3,
-      "words": ["a classroom", "students", "teacher", "blackboard", "books"]
-    },
-    {
-      "pageNumber": 5,
-      "words": ["Hari pinching Raghu", "sad face", "a school picnic", "friends playing"]
-    },
-    {
-      "pageNumber": 7,
-      "words": ["seaside", "picnic lunch", "sand", "rocks", "sun"]
-    },
-    {
-      "pageNumber": 8,
-      "words": ["crab", "lobster", "rocky pool", "pinching"]
-    },
-    {
-      "pageNumber": 18,
-      "words": ["two friends", "smiling face", "a helping hand", "dream sharing"]
-    },
-    {
-      "pageNumber": 21,
-      "words": ["pet shop", "kitten in a cage", "woman with child"]
-    },
-    {
-      "pageNumber": 23,
-      "words": ["karate kitten", "breaking a chair", "happy child", "old box"]
-    },
-    {
-      "pageNumber": 34,
-      "words": ["kittens", "striped kitten", "black kitten", "cat"]
-    },
-    {
-      "pageNumber": 39,
-      "words": ["drought village", "people leaving in bullock cart", "dry pond", "pot of water"]
-    },
-    {
-      "pageNumber": 41,
-      "words": ["firewood", "large cooking pot", "people eating Ganji together"]
-    },
-    {
-      "pageNumber": 57,
-      "words": ["tomato plant", "garden", "watering plants", "flowers"]
-    },
-    {
-      "pageNumber": 59,
-      "words": ["a big tomato", "blue ribbon", "Lalitha and family clapping"]
-    },
-    {
-      "pageNumber": 68,
-      "words": ["farmer milking cow", "ploughing field", "feeding hens", "pig pen", "corn field"]
-    },
-    {
-      "pageNumber": 73,
-      "words": ["idli", "dosa", "sambar rice", "fruit", "egg", "junk food"]
-    },
-    {
-      "pageNumber": 85,
-      "words": ["chips", "soft drink", "TV advertisement", "junk food tray"]
-    },
-    {
-      "pageNumber": 98,
-      "words": ["tiger in a cage", "farmer opening trap", "talking jackal", "horse", "trap scene"]
-    },
-    {
-      "pageNumber": 102,
-      "words": ["children playing cricket", "boy missing catch", "ball hitting face", "hospital"]
-    },
-    {
-      "pageNumber": 112,
-      "words": ["team of friends", "victory", "trophy", "smiling group"]
-    }
-  ]
-}
+       {
+        "pageNumber": 2,
+        "words": ["broom", "tap water", "ironing clothes"]
+      },
+       {
+        "pageNumber": 3,
+        "words": ["a village with huts"]
+      },
+      {
+        "pageNumber": 4,
+        "words": ["baloons","toys"]
+      },
+      {
+        "pageNumber": 5,
+        "words": ["crying boy", "scared face"]
+       },
+       {
+       "pageNumber": 6,
+        "words": ["classroom", "students"]
+      },
+      {
+        "pageNumber": 7,
+        "words": ["children in atrain"]
+      },
+      {
+        "pageNumber": 8,
+        "words": ["crab", "sea beach"]
+      },
+      {
+        "pageNumber": 9,
+        "words": ["friends smiling"]
+      },
+      {
+        "pageNumber": 10,
+        "words": ["shopkeeper of a pet shop","rabbit", "parrot", "cage"]
+      },
+      {
+        "pageNumber": 12,
+        "words": ["photo frame in the wall","kitten", "remote"]
+      },
+      {
+        "pageNumber": 13,
+        "words": ["cat", "kitten"]
+      },
+      {
+        "pageNumber": 14,
+        "words": ["bullock cart in the field"]
+      },
+      {
+        "pageNumber": 15,
+        "words": ["man cooking", "hot pot", "fire"]
+      },
+      {
+        "pageNumber": 16,
+        "words": ["man with a turban on his head"]
+      },
+      {
+        "pageNumber": 18,
+        "words": ["a tree with fruits","tomato"]
+      },
+      {
+        "pageNumber": 19,
+        "words": ["girl with a medal"]
+      },
+      {
+        "pageNumber": 20,
+        "words": ["farmer", "plough", "cows"]
+      },
+      {
+        "pageNumber": 21,
+        "words": ["pig", "hen", "farmer", "crops"]
+      },
+      {
+        "pageNumber": 22,
+        "words": ["notice board"]
+      },
+      {
+        "pageNumber": 23,
+        "words": ["students", "classroom"]
+      },
+      {
+        "pageNumber": 24,
+        "words": ["Doctor Aunty", "blackboard"]
+      },
+      {
+        "pageNumber": 25,
+        "words": ["Coca Cola", "chips", "ice cream"]
+      },
+      {
+        "pageNumber": 27,
+        "words": ["cage", "jackal", "tiger"]
+      },
+      {
+        "pageNumber": 28,
+        "words": ["catch", "boy catching a ball"]
+      },
+      {
+        "pageNumber": 29,
+        "words": ["playing cricket"]
+      },
+      {
+        "pageNumber": 30,
+        "words": ["boys playing hockey"]
+      },
+      {
+        "pageNumber": 31,
+        "words": ["trophy","goal post"]
+      }
+    ]
+  }
