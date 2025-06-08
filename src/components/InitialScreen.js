@@ -43,7 +43,7 @@ const InitialScreen = ({ onClassSelect }) => {
       <div className="initial-screen-container">
         <header className="initial-header">
           <div className="welcome-icon">🎨</div>
-          <h1 className="welcome-title">Welcome to Shiksha!</h1>
+          <h1 className="welcome-title">Welcome to Varnam!</h1>
           <p className="welcome-subtitle">
             Learn without barriers through drawing and AI
           </p>

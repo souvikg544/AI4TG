@@ -1,4 +1,4 @@
-# 🎨 Drawing Classifier
+# 🎨 Varnam
 
 An interactive web application that uses AI to classify hand-drawn sketches in real-time. Draw anything on the canvas and let our machine learning model predict what you've drawn!
 

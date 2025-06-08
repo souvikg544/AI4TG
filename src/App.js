@@ -247,7 +247,7 @@ function App() {
             <div className="header-content">
               <h1 className="app-title">
                 <span className="title-icon">🎨</span>
-                Shiksha
+                Varnam
                 <span className="title-icon">🤖</span>
               </h1>
               <p className="app-subtitle">
