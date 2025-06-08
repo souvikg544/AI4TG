@@ -1,7 +1,7 @@
 import React from 'react';
 import './PredictionDisplay.css';
 
-const PredictionDisplay = ({ predictions, isLoading, error }) => {
+const PredictionDisplay = ({ predictions, isLoading, error, onPredict }) => {
   if (error) {
     return (
       <div className="prediction-display">
@@ -41,6 +41,13 @@ const PredictionDisplay = ({ predictions, isLoading, error }) => {
             <h3>Ready to predict!</h3>
             <p>Hi, I am Coco, I am your learning buddy. Draw the word and click on Predict to see what I think it is!</p>
           </div>
+          {onPredict && (
+            <div className="predict-section">
+              <button className="predict-btn" onClick={onPredict}>
+                Predict
+              </button>
+            </div>
+          )}
         </div>
       </div>
     );

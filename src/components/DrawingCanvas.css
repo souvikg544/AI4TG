@@ -41,6 +41,119 @@
   justify-content: center;
 }
 
+/* Canvas Tools Section */
+.canvas-tools {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  width: 100%;
+  padding: 15px;
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(10px);
+  border-radius: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  margin-bottom: 15px;
+}
+
+.tool-section {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.tool-label {
+  font-size: 14px;
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 5px;
+}
+
+.tool-buttons {
+  display: flex;
+  gap: 8px;
+}
+
+.tool-btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 12px;
+  background: white;
+  color: #333;
+  border: 2px solid #ddd;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  flex: 1;
+  justify-content: center;
+}
+
+.tool-btn:hover {
+  background: #f8f9fa;
+  border-color: #007bff;
+}
+
+.tool-btn.active {
+  background: #007bff;
+  color: white;
+  border-color: #007bff;
+}
+
+.tool-icon {
+  font-size: 16px;
+}
+
+.size-section {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.size-label {
+  font-size: 14px;
+  font-weight: 600;
+  color: #333;
+  text-align: center;
+}
+
+.size-slider {
+  width: 100%;
+  height: 6px;
+  border-radius: 3px;
+  background: #ddd;
+  outline: none;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.size-slider::-webkit-slider-thumb {
+  appearance: none;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: #007bff;
+  cursor: pointer;
+  box-shadow: 0 2px 6px rgba(0, 123, 255, 0.3);
+  transition: all 0.2s ease;
+}
+
+.size-slider::-webkit-slider-thumb:hover {
+  background: #0056b3;
+  transform: scale(1.1);
+}
+
+.size-slider::-moz-range-thumb {
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: #007bff;
+  cursor: pointer;
+  border: none;
+  box-shadow: 0 2px 6px rgba(0, 123, 255, 0.3);
+}
+
 .canvas-controls .btn {
   padding: 10px 15px;
   font-size: 0.95em;
@@ -95,6 +208,35 @@
     height: auto;
   }
   
+  .canvas-tools {
+    padding: 12px;
+    gap: 12px;
+  }
+
+  .tool-buttons {
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .tool-btn {
+    width: 100%;
+    padding: 12px 15px;
+    font-size: 16px;
+  }
+
+  .tool-label, .size-label {
+    font-size: 16px;
+  }
+
+  .size-slider {
+    height: 8px;
+  }
+
+  .size-slider::-webkit-slider-thumb {
+    width: 22px;
+    height: 22px;
+  }
+  
   .canvas-controls {
     flex-direction: column;
     gap: 10px;
@@ -118,5 +260,15 @@
   
   .btn:hover {
     transform: none;
+  }
+
+  .tool-btn:hover {
+    background: white;
+    border-color: #ddd;
+  }
+
+  .tool-btn.active:hover {
+    background: #007bff;
+    border-color: #007bff;
   }
 } 

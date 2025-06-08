@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import DrawingCanvas from './components/DrawingCanvas';
 import PredictionDisplay from './components/PredictionDisplay';
 import PdfViewer from './components/PdfViewer';
@@ -22,6 +22,8 @@ function App() {
   const [isDataLoading, setIsDataLoading] = useState(false);
   
   const [canvasDimensions, setCanvasDimensions] = useState({ width: 450, height: 550 });
+  
+  const drawingCanvasRef = useRef(null);
   
   // Dynamic file URLs based on selected class
   const pdfFileUrl = userSelection ? `/book${userSelection.class}.pdf` : "/book.pdf";
@@ -216,6 +218,17 @@ function App() {
     setShowResultModal(false);
   };
 
+  // Function to handle prediction from PredictionDisplay
+  const handlePredictFromDisplay = () => {
+    if (drawingCanvasRef.current) {
+      const canvas = drawingCanvasRef.current.querySelector('.drawing-canvas');
+      if (canvas) {
+        const imageData = canvas.toDataURL('image/png');
+        handlePrediction(imageData);
+      }
+    }
+  };
+
   return (
     <div className="App">
       {!userSelection ? (
@@ -302,6 +315,7 @@ function App() {
                 )}
                 <div className="canvas-wrapper">
                   <DrawingCanvas 
+                    ref={drawingCanvasRef}
                     onPredict={handlePrediction} 
                     width={canvasDimensions.width} 
                     height={canvasDimensions.height}
@@ -315,6 +329,7 @@ function App() {
                 predictions={predictions}
                 isLoading={isLoading}
                 error={error && !error.includes("word list") ? error : null}
+                onPredict={handlePredictFromDisplay}
               />
               {error && !error.includes("word list") && (
                 <button className="retry-btn" onClick={handleRetry}>

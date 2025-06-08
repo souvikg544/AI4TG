@@ -1,10 +1,12 @@
-import React, { useRef, useEffect, useState } from 'react';
+import React, { useRef, useEffect, useState, forwardRef } from 'react';
 import './DrawingCanvas.css';
 
-const DrawingCanvas = ({ onPredict, width = 400, height = 400 }) => {
+const DrawingCanvas = forwardRef(({ onPredict, width = 400, height = 400 }, ref) => {
   const canvasRef = useRef(null);
   const [isDrawing, setIsDrawing] = useState(false);
   const [lastPos, setLastPos] = useState({ x: 0, y: 0 });
+  const [currentTool, setCurrentTool] = useState('brush'); // 'brush' or 'eraser'
+  const [brushSize, setBrushSize] = useState(5);
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -14,17 +16,24 @@ const DrawingCanvas = ({ onPredict, width = 400, height = 400 }) => {
     canvas.width = width;
     canvas.height = height;
     
-    // Set drawing properties
-    ctx.strokeStyle = '#000';
-    // Adjust line width based on canvas size for better scaling, e.g., width / 100
-    ctx.lineWidth = Math.max(2, Math.min(10, Math.round(width / 100))); 
+    // Set initial drawing properties
     ctx.lineCap = 'round';
     ctx.lineJoin = 'round';
     
-    // Fill with white background
+    // Fill with white background only on initial load
     ctx.fillStyle = '#fff';
     ctx.fillRect(0, 0, canvas.width, canvas.height);
   }, [width, height]);
+
+  // Separate effect for updating drawing properties without clearing canvas
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    
+    const ctx = canvas.getContext('2d');
+    ctx.strokeStyle = currentTool === 'brush' ? '#000' : '#fff';
+    ctx.lineWidth = brushSize;
+  }, [currentTool, brushSize]);
 
   const getMousePos = (e) => {
     const canvas = canvasRef.current;
@@ -58,6 +67,16 @@ const DrawingCanvas = ({ onPredict, width = 400, height = 400 }) => {
     if (!isDrawing) return;
     const canvas = canvasRef.current;
     const ctx = canvas.getContext('2d');
+    
+    // Set drawing mode based on current tool
+    if (currentTool === 'eraser') {
+      ctx.globalCompositeOperation = 'destination-out';
+    } else {
+      ctx.globalCompositeOperation = 'source-over';
+      ctx.strokeStyle = '#000';
+    }
+    
+    ctx.lineWidth = brushSize;
     ctx.beginPath();
     ctx.moveTo(lastPos.x, lastPos.y);
     ctx.lineTo(pos.x, pos.y);
@@ -84,6 +103,14 @@ const DrawingCanvas = ({ onPredict, width = 400, height = 400 }) => {
     ctx.fillRect(0, 0, canvas.width, canvas.height);
   };
 
+  const handleToolChange = (tool) => {
+    setCurrentTool(tool);
+  };
+
+  const handleBrushSizeChange = (e) => {
+    setBrushSize(parseInt(e.target.value));
+  };
+
   const predictDrawing = () => {
     const canvas = canvasRef.current;
     const imageData = canvas.toDataURL('image/png');
@@ -93,7 +120,7 @@ const DrawingCanvas = ({ onPredict, width = 400, height = 400 }) => {
   };
 
   return (
-    <div className="drawing-canvas-component-root">
+    <div ref={ref} className="drawing-canvas-component-root">
       <canvas
         ref={canvasRef}
         className="drawing-canvas"
@@ -106,18 +133,51 @@ const DrawingCanvas = ({ onPredict, width = 400, height = 400 }) => {
         onTouchMove={handleTouchMove}
         onTouchEnd={handleTouchEnd}
       />
+      
+      <div className="canvas-tools">
+        <div className="tool-section">
+          <label className="tool-label">Tools:</label>
+          <div className="tool-buttons">
+            <button 
+              className={`tool-btn ${currentTool === 'brush' ? 'active' : ''}`}
+              onClick={() => handleToolChange('brush')}
+            >
+              <span className="tool-icon">🖌️</span>
+              Brush
+            </button>
+            <button 
+              className={`tool-btn ${currentTool === 'eraser' ? 'active' : ''}`}
+              onClick={() => handleToolChange('eraser')}
+            >
+              <span className="tool-icon">🧹</span>
+              Eraser
+            </button>
+          </div>
+        </div>
+        
+        <div className="size-section">
+          <label className="size-label">Size: {brushSize}px</label>
+          <input
+            type="range"
+            min="1"
+            max="20"
+            value={brushSize}
+            onChange={handleBrushSizeChange}
+            className="size-slider"
+          />
+        </div>
+      </div>
+
       <div className="canvas-controls">
         <button className="btn btn-secondary" onClick={clearCanvas}>
           <span className="btn-icon">🗑️</span>
           Clear
         </button>
-        <button className="btn btn-primary" onClick={predictDrawing}>
-          <span className="btn-icon">🔮</span>
-          Predict
-        </button>
       </div>
     </div>
   );
-};
+});
+
+DrawingCanvas.displayName = 'DrawingCanvas';
 
 export default DrawingCanvas; 
