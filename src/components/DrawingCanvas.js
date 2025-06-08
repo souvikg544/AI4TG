@@ -7,33 +7,64 @@ const DrawingCanvas = forwardRef(({ onPredict, width = 400, height = 400 }, ref)
   const [lastPos, setLastPos] = useState({ x: 0, y: 0 });
   const [currentTool, setCurrentTool] = useState('brush'); // 'brush' or 'eraser'
   const [brushSize, setBrushSize] = useState(5);
+  const [isInitialized, setIsInitialized] = useState(false);
+  const [savedImageData, setSavedImageData] = useState(null);
 
-  useEffect(() => {
-    const canvas = canvasRef.current;
-    const ctx = canvas.getContext('2d');
-    
-    // Set canvas drawing buffer size
-    canvas.width = width;
-    canvas.height = height;
-    
-    // Set initial drawing properties
-    ctx.lineCap = 'round';
-    ctx.lineJoin = 'round';
-    
-    // Fill with white background only on initial load
-    ctx.fillStyle = '#fff';
-    ctx.fillRect(0, 0, canvas.width, canvas.height);
-  }, [width, height]);
-
-  // Separate effect for updating drawing properties without clearing canvas
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
     
     const ctx = canvas.getContext('2d');
+    
+    // Save existing drawing if canvas already has content and is being resized
+    let imageDataToRestore = null;
+    if (isInitialized && (canvas.width !== width || canvas.height !== height)) {
+      try {
+        imageDataToRestore = ctx.getImageData(0, 0, canvas.width, canvas.height);
+      } catch (e) {
+        console.warn('Could not save canvas data:', e);
+        imageDataToRestore = savedImageData; // Fall back to previously saved data
+      }
+    }
+    
+    // Set canvas dimensions
+    canvas.width = width;
+    canvas.height = height;
+    
+    // Set drawing properties
+    ctx.lineCap = 'round';
+    ctx.lineJoin = 'round';
     ctx.strokeStyle = currentTool === 'brush' ? '#000' : '#fff';
     ctx.lineWidth = brushSize;
-  }, [currentTool, brushSize]);
+    
+    // Fill with white background
+    ctx.fillStyle = '#fff';
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+    
+    // Restore drawing if we had one
+    if (imageDataToRestore && isInitialized) {
+      try {
+        ctx.putImageData(imageDataToRestore, 0, 0);
+        setSavedImageData(imageDataToRestore);
+      } catch (e) {
+        console.warn('Could not restore canvas data:', e);
+      }
+    }
+    
+    if (!isInitialized) {
+      setIsInitialized(true);
+    }
+  }, [width, height]);
+
+  // Separate effect for updating drawing properties without clearing canvas
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    if (!canvas || !isInitialized) return;
+    
+    const ctx = canvas.getContext('2d');
+    ctx.strokeStyle = currentTool === 'brush' ? '#000' : '#fff';
+    ctx.lineWidth = brushSize;
+  }, [currentTool, brushSize, isInitialized]);
 
   const getMousePos = (e) => {
     const canvas = canvasRef.current;
@@ -86,6 +117,17 @@ const DrawingCanvas = forwardRef(({ onPredict, width = 400, height = 400 }, ref)
 
   const stopDrawing = () => {
     setIsDrawing(false);
+    
+    // Save current canvas state after drawing is complete
+    const canvas = canvasRef.current;
+    if (canvas && isInitialized) {
+      try {
+        const imageData = canvas.getContext('2d').getImageData(0, 0, canvas.width, canvas.height);
+        setSavedImageData(imageData);
+      } catch (e) {
+        console.warn('Could not save canvas state:', e);
+      }
+    }
   };
 
   const handleMouseDown = (e) => { startDrawing(getMousePos(e)); };
@@ -101,6 +143,10 @@ const DrawingCanvas = forwardRef(({ onPredict, width = 400, height = 400 }, ref)
     const ctx = canvas.getContext('2d');
     ctx.fillStyle = '#fff';
     ctx.fillRect(0, 0, canvas.width, canvas.height);
+    // Reset initialization state to ensure clean state
+    setIsInitialized(true);
+    // Clear saved image data
+    setSavedImageData(null);
   };
 
   const handleToolChange = (tool) => {

@@ -1,10 +1,37 @@
 // Configuration for the Gradio API
 const API_CONFIG = {
-  // Gradio Space URL - can be overridden with environment variable
-  // spaceUrl: process.env.REACT_APP_GRADIO_SPACE || "souvikg544-quickdraw-classifier.hf.space",
-  spaceUrl: process.env.REACT_APP_GRADIO_SPACE || "souvikg544-draw-zero-shot.hf.space",
+  // Primary Gradio Space URL (Zero GPU powered)
+  primarySpaceUrl: process.env.REACT_APP_GRADIO_SPACE || "souvikg544-draw-zero-shot.hf.space",
+  // Fallback Gradio Space URL (when primary is exhausted)
+  fallbackSpaceUrl: process.env.REACT_APP_FALLBACK_GRADIO_SPACE || "souvikg544-quickdraw-classifier.hf.space",
   timeout: parseInt(process.env.REACT_APP_API_TIMEOUT) || 300000, // 30 seconds timeout
   topK: parseInt(process.env.REACT_APP_TOP_K) || 5 // Number of top predictions to return
+};
+
+// Track current space being used
+let currentSpaceUrl = API_CONFIG.primarySpaceUrl;
+let isUsingFallback = false;
+
+/**
+ * Reset to primary space (can be called manually or after some time)
+ */
+const resetToPrimary = () => {
+  console.log('Resetting to primary space...');
+  currentSpaceUrl = API_CONFIG.primarySpaceUrl;
+  isUsingFallback = false;
+};
+
+/**
+ * Get current space status
+ * @returns {Object} - Current space information
+ */
+export const getSpaceStatus = () => {
+  return {
+    currentSpace: currentSpaceUrl,
+    isUsingFallback,
+    primarySpace: API_CONFIG.primarySpaceUrl,
+    fallbackSpace: API_CONFIG.fallbackSpaceUrl
+  };
 };
 
 /**
@@ -27,143 +54,185 @@ const processImageData = (imageData) => {
  * @returns {Promise<Array>} - Array of prediction objects with label and confidence
  */
 export const makePrediction = async (imageData, word = '') => {
+  let lastError = null;
+
+  // Try primary space first
   try {
-    console.log('Making prediction request to Gradio API...');
-    console.log('Current word:', word);
+    console.log('Trying primary space:', API_CONFIG.primarySpaceUrl);
+    currentSpaceUrl = API_CONFIG.primarySpaceUrl;
+    isUsingFallback = false;
     
-    const processedImageData = processImageData(imageData);
+    const result = await makePredictionAttempt(imageData, word);
+    console.log('Success with primary space');
+    return result;
+  } catch (error) {
+    console.warn('Primary space failed:', error.message);
+    lastError = error;
+  }
+
+  // Try fallback space
+  try {
+    console.log('Trying fallback space:', API_CONFIG.fallbackSpaceUrl);
+    currentSpaceUrl = API_CONFIG.fallbackSpaceUrl;
+    isUsingFallback = true;
     
-    // Correct Gradio API endpoints based on your curl command
-    const baseUrl = `https://${API_CONFIG.spaceUrl}`;
-    const callUrl = `${baseUrl}/gradio_api/call/classify_image_api`;
+    const result = await makePredictionAttempt(imageData, word);
+    console.log('Success with fallback space');
+    return result;
+  } catch (error) {
+    console.error('Fallback space also failed:', error.message);
+    lastError = error;
+  }
+
+  // Both failed, throw error
+  const spaceInfo = 'both spaces';
+  if (lastError.name === 'AbortError' || lastError.message.includes('timeout')) {
+    throw new Error(`Request timeout on ${spaceInfo} - please try again`);
+  } else if (lastError.message.includes('Failed to fetch') || lastError.message.includes('network')) {
+    throw new Error(`Unable to connect to prediction service (${spaceInfo}). Please check your internet connection.`);
+  } else {
+    throw new Error(`Prediction failed on ${spaceInfo}: ${lastError.message || 'Unknown error'}`);
+  }
+};
+
+/**
+ * Make a single prediction attempt to the current space
+ * @param {string} imageData - Base64 image data from canvas
+ * @param {string} word - The current word to draw (in lowercase)
+ * @returns {Promise<Array>} - Array of prediction objects with label and confidence
+ */
+const makePredictionAttempt = async (imageData, word = '') => {
+  const processedImageData = processImageData(imageData);
+  
+  // Correct Gradio API endpoints based on your curl command
+  const baseUrl = `https://${currentSpaceUrl}`;
+  const callUrl = `${baseUrl}/gradio_api/call/classify_image_api`;
+  
+  console.log('Calling Gradio API at:', callUrl);
+  
+  // Step 1: Make the initial call to get the event ID
+  const callResponse = await fetch(callUrl, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      data: [processedImageData, API_CONFIG.topK, word]
+    }),
+    signal: AbortSignal.timeout(API_CONFIG.timeout)
+  });
+
+  if (!callResponse.ok) {
+    const errorText = await callResponse.text();
+    throw new Error(`API Call Error (${callResponse.status}): ${callResponse.statusText} - ${errorText}`);
+  }
+
+  const callResult = await callResponse.json();
+  console.log('Initial call response:', callResult);
+
+  // Check for errors in the response
+  if (callResult.error) {
+    throw new Error(`API returned error: ${callResult.error}`);
+  }
+
+  // Extract event ID from the JSON response
+  if (!callResult.event_id) {
+    throw new Error('Failed to get event_id from Gradio API');
+  }
+  
+  const eventId = callResult.event_id;
+  console.log('Got event ID:', eventId);
+
+  // Step 2: Poll the result using the event ID
+  const resultUrl = `${baseUrl}/gradio_api/call/classify_image_api/${eventId}`;
+  console.log('Polling result at:', resultUrl);
+
+  const resultResponse = await fetch(resultUrl, {
+    method: 'GET',
+    headers: {
+      'Accept': 'text/event-stream',
+    },
+    signal: AbortSignal.timeout(API_CONFIG.timeout)
+  });
+
+  if (!resultResponse.ok) {
+    const errorText = await resultResponse.text();
+    throw new Error(`API Result Error (${resultResponse.status}): ${resultResponse.statusText} - ${errorText}`);
+  }
+
+  // Read the streaming response
+  const reader = resultResponse.body.getReader();
+  const decoder = new TextDecoder();
+  let result = '';
+  let predictions = null;
+
+  while (true) {
+    const { done, value } = await reader.read();
+    if (done) break;
     
-    console.log('Calling Gradio API at:', callUrl);
+    const chunk = decoder.decode(value);
+    result += chunk;
     
-    // Step 1: Make the initial call to get the event ID
-    const callResponse = await fetch(callUrl, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        data: [processedImageData, API_CONFIG.topK, word]
-      }),
-      signal: AbortSignal.timeout(API_CONFIG.timeout)
-    });
-
-    if (!callResponse.ok) {
-      throw new Error(`API Call Error (${callResponse.status}): ${callResponse.statusText}`);
-    }
-
-    const callResult = await callResponse.json(); // Parse as JSON, not text
-    console.log('Initial call response:', callResult);
-
-    // Extract event ID from the JSON response
-    if (!callResult.event_id) {
-      throw new Error('Failed to get event_id from Gradio API');
-    }
-    
-    const eventId = callResult.event_id;
-    console.log('Got event ID:', eventId);
-
-    // Step 2: Poll the result using the event ID
-    const resultUrl = `${baseUrl}/gradio_api/call/classify_image_api/${eventId}`;
-    console.log('Polling result at:', resultUrl);
-
-    const resultResponse = await fetch(resultUrl, {
-      method: 'GET',
-      headers: {
-        'Accept': 'text/event-stream',
-      },
-      signal: AbortSignal.timeout(API_CONFIG.timeout)
-    });
-
-    if (!resultResponse.ok) {
-      throw new Error(`API Result Error (${resultResponse.status}): ${resultResponse.statusText}`);
-    }
-
-    // Read the streaming response
-    const reader = resultResponse.body.getReader();
-    const decoder = new TextDecoder();
-    let result = '';
-    let predictions = null;
-
-    while (true) {
-      const { done, value } = await reader.read();
-      if (done) break;
-      
-      const chunk = decoder.decode(value);
-      result += chunk;
-      
-      // Look for the completion event with data
-      const lines = result.split('\n');
-      for (const line of lines) {
-        if (line.startsWith('event: complete')) {
-          // The next line should contain the data
-          const nextLineIndex = lines.indexOf(line) + 1;
-          if (nextLineIndex < lines.length && lines[nextLineIndex].startsWith('data: ')) {
-            try {
-              const dataStr = lines[nextLineIndex].substring(6); // Remove 'data: ' prefix
-              const data = JSON.parse(dataStr);
-              console.log('Complete event data:', data);
-              
-              // Expected format: [{"success": true, "predictions": [...]}]
-              if (Array.isArray(data) && data.length > 0 && data[0].success && data[0].predictions) {
-                predictions = data[0].predictions;
-                console.log('Raw predictions from API:', predictions);
-                break;
-              }
-            } catch (e) {
-              console.warn('Error parsing complete event data:', lines[nextLineIndex], e);
+    // Look for the completion event with data
+    const lines = result.split('\n');
+    for (const line of lines) {
+      if (line.startsWith('event: complete')) {
+        // The next line should contain the data
+        const nextLineIndex = lines.indexOf(line) + 1;
+        if (nextLineIndex < lines.length && lines[nextLineIndex].startsWith('data: ')) {
+          try {
+            const dataStr = lines[nextLineIndex].substring(6); // Remove 'data: ' prefix
+            const data = JSON.parse(dataStr);
+            console.log('Complete event data:', data);
+            
+            // Check for errors in the completion data
+            if (Array.isArray(data) && data.length > 0 && data[0].error) {
+              throw new Error(`Prediction error: ${data[0].error}`);
             }
+            
+            // Expected format: [{"success": true, "predictions": [...]}]
+            if (Array.isArray(data) && data.length > 0 && data[0].success && data[0].predictions) {
+              predictions = data[0].predictions;
+              console.log('Raw predictions from API:', predictions);
+              break;
+            }
+          } catch (e) {
+            console.warn('Error parsing complete event data:', lines[nextLineIndex], e);
           }
         }
       }
-      
-      if (predictions) break;
-    }
-
-    if (!predictions || !Array.isArray(predictions)) {
-      console.error('Invalid predictions format:', predictions);
-      throw new Error('Invalid response format from Gradio API');
-    }
-
-    // Process and format predictions
-    const formattedPredictions = predictions.map(pred => {
-      return {
-        label: pred.category || pred.label || 'Unknown',
-        confidence: typeof pred.confidence === 'number' ? pred.confidence : 0
-      };
-    });
-
-    // Sort by confidence (highest first) and return top results
-    const sortedPredictions = formattedPredictions
-      .filter(pred => pred.label && pred.label !== 'Unknown')
-      .sort((a, b) => b.confidence - a.confidence)
-      .slice(0, API_CONFIG.topK);
-
-    console.log('Formatted predictions:', sortedPredictions);
-    
-    if (sortedPredictions.length === 0) {
-      throw new Error('No valid predictions received from API');
     }
     
-    return sortedPredictions;
-
-  } catch (error) {
-    console.error('Gradio API Error:', error);
-    
-    // Handle different types of errors
-    if (error.name === 'AbortError' || error.message.includes('timeout')) {
-      throw new Error('Request timeout - please try again');
-    } else if (error.message.includes('Failed to fetch') || error.message.includes('network')) {
-      throw new Error('Unable to connect to prediction service. Please check your internet connection.');
-    } else if (error.message.includes('Invalid response') || error.message.includes('No valid predictions')) {
-      throw error; // Re-throw format errors as-is
-    } else {
-      throw new Error(`Prediction failed: ${error.message || 'Unknown error'}`);
-    }
+    if (predictions) break;
   }
+
+  if (!predictions || !Array.isArray(predictions)) {
+    console.error('Invalid predictions format:', predictions);
+    throw new Error('Invalid response format from Gradio API');
+  }
+
+  // Process and format predictions
+  const formattedPredictions = predictions.map(pred => {
+    return {
+      label: pred.category || pred.label || 'Unknown',
+      confidence: typeof pred.confidence === 'number' ? pred.confidence : 0
+    };
+  });
+
+  // Sort by confidence (highest first) and return top results
+  const sortedPredictions = formattedPredictions
+    .filter(pred => pred.label && pred.label !== 'Unknown')
+    .sort((a, b) => b.confidence - a.confidence)
+    .slice(0, API_CONFIG.topK);
+
+  console.log('Formatted predictions:', sortedPredictions);
+  console.log(`Success using ${isUsingFallback ? 'fallback' : 'primary'} space:`, currentSpaceUrl);
+  
+  if (sortedPredictions.length === 0) {
+    throw new Error('No valid predictions received from API');
+  }
+  
+  return sortedPredictions;
 };
 
 /**
@@ -173,7 +242,7 @@ export const makePrediction = async (imageData, word = '') => {
 export const testApiConnection = async () => {
   try {
     console.log('Testing Gradio API connection...');
-    const apiUrl = `https://${API_CONFIG.spaceUrl}`;
+    const apiUrl = `https://${currentSpaceUrl}`;
     
     const response = await fetch(apiUrl, {
       method: 'HEAD',
@@ -217,7 +286,10 @@ export const makeMockPrediction = async (imageData) => {
 const predictionService = {
   makePrediction,
   testApiConnection,
-  makeMockPrediction
+  makeMockPrediction,
+  getSpaceStatus,
+  resetToPrimary
 };
 
-export default predictionService; 
+export default predictionService;
+export { resetToPrimary }; 

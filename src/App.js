@@ -4,7 +4,7 @@ import PredictionDisplay from './components/PredictionDisplay';
 import PdfViewer from './components/PdfViewer';
 import ResultModal from './components/ResultModal';
 import InitialScreen from './components/InitialScreen';
-import { makePrediction, makeMockPrediction, testApiConnection } from './services/predictionService';
+import { makePrediction, makeMockPrediction, testApiConnection, getSpaceStatus } from './services/predictionService';
 import './App.css';
 
 function App() {
@@ -20,6 +20,7 @@ function App() {
   const [isCorrectAnswer, setIsCorrectAnswer] = useState(false);
   const [userSelection, setUserSelection] = useState(null);
   const [isDataLoading, setIsDataLoading] = useState(false);
+  const [spaceStatus, setSpaceStatus] = useState(getSpaceStatus());
   
   const [canvasDimensions, setCanvasDimensions] = useState({ width: 450, height: 550 });
   
@@ -121,9 +122,13 @@ function App() {
       } else {
         try {
           predictionResults = await makePrediction(imageData, currentWordToDraw.toLowerCase());
+          // Update space status after successful prediction
+          setSpaceStatus(getSpaceStatus());
           // Don't auto-advance here, let the modal handle it
         } catch (apiError) {
           console.warn('API call failed, falling back to mock predictions:', apiError);
+          // Update space status even after failure to show current state
+          setSpaceStatus(getSpaceStatus());
           predictionResults = await makeMockPrediction(imageData);
           setApiAvailable(false);
         }
@@ -142,6 +147,8 @@ function App() {
       
     } catch (err) {
       console.error('Prediction error:', err);
+      // Update space status after error to show current state
+      setSpaceStatus(getSpaceStatus());
       setError(err.message || 'Failed to make prediction');
     } finally {
       setIsLoading(false);
@@ -349,6 +356,16 @@ function App() {
               </a> • Draw, Learn, Discover
               <span className="footer-icon">✨</span>
             </p>
+            {spaceStatus && apiAvailable !== false && (
+              <div className={`space-status ${spaceStatus.isUsingFallback ? 'fallback' : 'primary'}`}>
+                <span className="space-icon">
+                  {spaceStatus.isUsingFallback ? '🔄' : '⚡'}
+                </span>
+                <span className="space-text">
+                  {spaceStatus.isUsingFallback ? 'Using Backup AI' : 'Zero GPU AI'}
+                </span>
+              </div>
+            )}
           </footer>
         </div>
       )}

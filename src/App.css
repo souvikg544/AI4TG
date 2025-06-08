@@ -719,3 +719,46 @@ body {
   margin: 0;
   line-height: 1.5;
 }
+
+/* Space Status Indicator */
+.space-status {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  margin-top: 5px;
+  font-size: 12px;
+  opacity: 0.8;
+  transition: opacity 0.3s ease;
+}
+
+.space-status:hover {
+  opacity: 1;
+}
+
+.space-status.primary {
+  color: #00ff88;
+}
+
+.space-status.fallback {
+  color: #ffa500;
+}
+
+.space-icon {
+  font-size: 12px;
+}
+
+.space-text {
+  font-weight: 500;
+}
+
+/* Mobile responsive for space status */
+@media (max-width: 768px) {
+  .space-status {
+    font-size: 11px;
+    gap: 3px;
+  }
+  
+  .space-icon {
+    font-size: 11px;
+  }
+}

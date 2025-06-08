@@ -197,6 +197,26 @@
 @media (max-width: 768px) {
   .drawing-canvas-container {
     padding: 15px;
+    /* Prevent content from jumping during scroll */
+    transform: translateZ(0);
+    -webkit-transform: translateZ(0);
+  }
+  
+  .drawing-canvas {
+    /* Ensure canvas stays in place during scroll */
+    position: relative;
+    will-change: auto;
+    transform: translateZ(0);
+    -webkit-transform: translateZ(0);
+  }
+  
+  /* Prevent mobile browser quirks */
+  .canvas-wrapper {
+    /* Force hardware acceleration */
+    transform: translateZ(0);
+    -webkit-transform: translateZ(0);
+    /* Prevent layout shifts */
+    contain: layout;
   }
   
   .canvas-wrapper {
